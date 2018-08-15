@@ -1,0 +1,28 @@
+
+Data transforms
+mean=[0.485, 0.456, 0.406]
+std=[0.229, 0.224, 0.225]
+why need this?
+
+
+1. How to load the data:
+	Load images from folder, info from .extension file
+	Split data into training set, validation set
+	
+	Plot random image
+	data augmentation
+2. Create model base on the previous model
+	Transfer learning load the model
+	from torchvision import models
+
+
+3. Training and Fine Turning and choose the best parameters with that model
+
+4. Test accuracy on test set
+
+Visualizing Output:
+register_forward_hook
+
+
+
+
