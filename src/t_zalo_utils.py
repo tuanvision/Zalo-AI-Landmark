@@ -1,7 +1,10 @@
 import os
+import torch
 import pickle
 from torch.utils.data import Dataset
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(device)
 
 def get_fns_lbs(base_dir, json_file, pickle_fn = 'mydata.p', force = False):    
     pickle_fn = base_dir + pickle_fn 
