@@ -23,6 +23,49 @@ why need this?
 Visualizing Output:
 register_forward_hook
 
+parameters:
+pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+params = sum([np.prod(p.size()) for p in model_parameters])
+print(pytorch_total_params)
+print(params)
 
+Modify MobileNet:
+      (18): Sequential(
+        (0): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(1280, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU6(inplace)
+      )
+    )
+  )
+  (target): Sequential(
+    (0): Linear(in_features=1000, out_features=103, bias=True)
+  )
+Original MobileNet:
+    (18): Sequential(
+      (0): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (1): BatchNorm2d(1280, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU6(inplace)
+    )
+  )
+  (classifier): Sequential(
+    (0): Dropout(p=0.2)
+    (1): Linear(in_features=1280, out_features=1000, bias=True)
+  )
+)
+
+
+If you trace the GPU stat with watch -n 1 -d nvidia-smi, you will see the memory usage will increase when the first validation epoch.
+If you only consider the weights of a single Linear layer from that model. You get
+
+49200^2 = 2 420 640 000
+elements + each element takes 4 bytes, which gives you
+
+2 420 640 000 * 4 / 1024^3 = 9,01GB
+for the weights alone. Then, you need another memory chunk of this size to store gradients. You also need to save the intermediate results so you can compute the gradient.
+
+# change the envs for cv2 between py2 and anaconda3
+cd /opt/ros/kinetic/lib/python2.7/dist-packages/
+sudo mv cv2.so cv2_ros.so
 
 

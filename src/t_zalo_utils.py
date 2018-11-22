@@ -2,7 +2,7 @@ import os
 import torch
 import pickle
 from torch.utils.data import Dataset
-
+import numpy as np
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
@@ -88,12 +88,54 @@ class MyDataset(Dataset):
 
 
 
-json_file = '../../data/train_val2018.json'
-data_dir = '../../data/TrainVal/'
+# json_file = '../../data/train_val2018.json'
+# data_dir = '../../data/TrainVal/'
 
-# print("json_file: {}, data_dir: {}".format(json_file, data_dir))
-# print('Loading data')
-fns, lbs, cnt = get_fns_lbs(data_dir, json_file)
-print('Total files in the original dataset: {}'.format(cnt))
-print('Total files with > 0 byes: {}'.format(len(fns)))
-print('Total files with zero bytes {}'.format(cnt - len(fns)))
+# # print("json_file: {}, data_dir: {}".format(json_file, data_dir))
+# # print('Loading data')
+# fns, lbs, cnt = get_fns_lbs(data_dir, json_file)
+# print('Total files in the original dataset: {}'.format(cnt))
+# print('Total files with > 0 byes: {}'.format(len(fns)))
+# print('Total files with zero bytes {}'.format(cnt - len(fns)))
+
+def mytopk(pred, gt, k=3):
+    """
+    compute topk error
+    pred: (n_sample,n_class) np array
+    gt: a list of ground truth
+    --------
+    return:
+        n_correct: number of correct prediction 
+        topk_error: error, = n_connect/len(gt)
+    """
+    # topk = np.argpartition(pred, -k)[:, -k:]
+    # print("GT size: ", len(gt))
+    # print(np.argsort(pred, axis = 1)[:, -k:])
+
+    topk = np.argsort(pred, axis = 1)[:, -k:][:, ::-1] # ::-1: reverse 
+    print("TOPK: ", topk)
+    # gt = np.array(gt).reshape((-1, 1)
+    print(np.array(gt).reshape(-1, 1 ))
+    diff = topk - np.array(gt).reshape((-1, 1))
+    # print(topk.size(), " ", gt.size() )
+    # print("DIFF value: ", (diff == 0))
+    # print("DIFF value: ", (np.where(diff == 0)))
+    print("DIFF: ", np.where(diff == 0))
+
+    n_correct = np.where(diff == 0)[0].size 
+    # print("Ncorret: ", n_correct)
+    topk_error = float(n_correct)/pred.shape[0]
+    return n_correct, topk_error
+
+pred = np.array([[8, 2, 3, 4], [100, 70, 3, 4], [100, 6, 8, 9], [2, 9, 8, 7]])
+gt = np.array([2, 1, 8, 2])
+mytopk(pred, gt)
+
+# # if not os.path.isdir('checkpoint'):
+# #     os.mkdir('checkpoint')
+# save_point = '../checkpoint/'
+# if not os.path.isdir(save_point):
+#     os.mkdir(save_point)
+import torchvision.models as models
+model = models.densenet121(True)
+print(model)

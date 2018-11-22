@@ -2,3 +2,9 @@
 data/
 *.pyc
 *.csv
+checkpoint/
+model/
+src/runs/
+src/__pycache__
+
+

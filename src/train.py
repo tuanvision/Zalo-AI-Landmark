@@ -56,8 +56,9 @@ def exp_lr_scheduler(args, optimizer, epoch):
 
 use_gpu = torch.cuda.is_available()
 
-json_file = '../data/train_val2018.json'
-data_dir = '../data/TrainVal/'
+
+json_file = '../../data/train_val2018.json'
+data_dir = '../../data/TrainVal/'
 
 print('Loading data')
 fns, lbs, cnt = get_fns_lbs(data_dir, json_file)
